@@ -1,1 +1,189 @@
-function init(){var e=new ymaps.Map("map",{center:[55.74,37.58],zoom:13,controls:[]}),o=new ymaps.control.SearchControl({options:{provider:"yandex#search"}});e.controls.add(o),o.search("СДЭК")}ymaps.ready(init);var forms=document.querySelectorAll("form");Array.prototype.forEach.call(forms,function(e){e.onsubmit=function(o){o.preventDefault();var r=this.querySelector("button"),s=new FormData(e),n=new XMLHttpRequest,t=r.innerHTML;n.open("POST","https://docs.google.com/forms/d/e/1FAIpQLSfk_uOTXNYKXvr01VEGPGgKAIwlNg90oSqHFqiYs73rscZ56w/formResponse",!0),n.send(s),r.classList.add("success"),r.innerHTML="Готово!",e.reset(),setTimeout(function(){r.classList.remove("success"),r.innerHTML=t},3e3)}});
+//RANGE-SLIDER
+(function() {
+  var parent = document.querySelector(".range-slider");
+  // если нет выходим
+  if(!parent) return;
+
+  var
+    rangeS = parent.querySelectorAll("input[type=range]"),
+    numberS = parent.querySelectorAll("input[type=number]");
+
+    //function reversed(a,b) {};
+
+  // у коллекции есть forEach
+  rangeS.forEach(function(el) {
+    el.oninput = function() {
+      var slide1 = parseFloat(rangeS[0].value),
+        slide2 = parseFloat(rangeS[1].value);
+
+      //TODO reversed
+      if (slide1 > slide2) {
+        var tmp = slide2;
+        slide2 = slide1;
+        slide1 = tmp;
+      }
+
+      numberS[0].value = slide1;
+      numberS[1].value = slide2;
+    }
+  });
+
+  numberS.forEach(function(el) {
+    el.oninput = function() {
+			var number1 = parseFloat(numberS[0].value),
+					number2 = parseFloat(numberS[1].value);
+
+      ////TODO reversed
+      if (number1 > number2) {
+        var tmp = number1;
+        numberS[0].value = number2;
+        numberS[1].value = tmp;
+      }
+
+      rangeS[0].value = number1;
+      rangeS[1].value = number2;
+
+    }
+  });
+
+})();
+
+
+//MODAL
+(function(){
+  var modal, close;
+  //фиксим задний слой
+  function DOCUMENT_NOSCROLL() {
+    document.body.classList.toggle("no-scroll");
+  }
+  //behavior ищем вызовы
+  document.onclick = function(e) {
+    if (!e.target.hasAttribute('data-modal')) return;
+    e.preventDefault();
+    var targetModal = e.target.getAttribute('data-modal');
+    tglModal(targetModal);
+  };
+  function tglModal(targetModal) {
+    if(targetModal) {
+      modal = document.getElementById(targetModal),
+      close = modal.querySelector(".close");
+    }
+    modal.hidden = !modal.hidden;
+    DOCUMENT_NOSCROLL();
+    modal.addEventListener("click", modalClose, false);
+  }
+  //close
+  function modalClose(e) {
+    var target = e.target;
+    if (target != modal && target != close) return;
+    tglModal();
+  };
+})();
+
+
+
+
+//SLIDER
+(function(){
+
+	var box = document.querySelector('.slides');
+  // если слайдера нет - выходим
+  if(!box) return;
+
+
+	var slides = box.querySelectorAll('img');
+	var currentSlide = 0;
+	//var counter = document.querySelector('.counter');
+	slides[currentSlide].className = 'current';
+
+  var dots = document.querySelector('.dots');
+  var dots_item = '';
+  for (var i = 0; i < slides.length; i++) {
+    //dots_item += '<b>' + (i + 1) + '</b>';
+    dots_item += '<img src="assets/img/big/' + (i + 1) + '.jpg"/>';
+  }
+  dots.innerHTML = dots_item;
+  var buttons = dots.querySelectorAll('img');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].onclick = (function(n) {
+      return function() {
+        goToSlide(n);
+      };
+    })(i);
+  }
+
+	var timerID = setInterval(function() {
+		goToSlide(currentSlide + 1)
+	}, 3000);
+
+	function goToSlide(n) {
+		slides[currentSlide].className = '';
+    buttons[currentSlide].className = '';
+
+		currentSlide = (n + slides.length) % slides.length;
+
+		slides[currentSlide].className = 'current';
+    buttons[currentSlide].className = 'current';
+
+
+		//counter.innerHTML = currentSlide + 1;
+	}
+	clearInterval
+	box.onmouseover = function() {
+		clearInterval(timerID)
+	};
+	box.onmouseout = function() {
+		timerID = setInterval(function() {
+			goToSlide(currentSlide + 1)
+		}, 2000)
+	};
+
+	//next & prev
+	var next = document.querySelector('.next');
+	var prev = document.querySelector('.prev');
+
+	next.onclick = function() {
+		//alert(1);
+		goToSlide(currentSlide + 1)
+	};
+	prev.onclick = function() {
+		goToSlide(currentSlide - 1)
+	};
+
+})();
+
+
+
+//
+(function(){
+
+  function hasClass(el, className) {
+    return (el.classList) ? el.classList.contains(className) : new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
+  }
+
+
+  document.addEventListener("click", expanderToggle);
+
+  function expanderToggle(e) {
+    if ( hasClass(e.target, 'exp_trigger') ) {
+      e.target.parentNode.classList.toggle('open');
+    }
+
+    /*
+    if ( !e.target.className === 'exp_trigger' ) return;
+    var trigger = e.target;
+    trigger.parentNode.classList.toggle('open');
+
+    var = content = trigger.parentNode.querySelector('.exp_content');
+    trigger.classList.toggle('open');
+    content.classList.toggle('open');
+    */
+
+  };
+
+
+})();
+
+
+//tabs
+//http://webformyself.com/prostye-adaptivnye-vkladki-taby-dlya-sajta-na-javascript-i-css/
